@@ -1,8 +1,12 @@
 # Zombie Hunt
 
+![Zombies in the arena: a small one, a huge one, and a normal one](docs/zombies.jpg)
+
 A pseudo-3D zombie shooter written in Java (Swing) as a 12th-grade project.
 You walk an arena, the doors open on a timer, and zombies come in from the edges.
 The view is a software 3D projection: no game engine, just matrices and polygons.
+Normal zombies are green blocks with red hands and feet. Some are smaller, and
+every so often a huge one comes through a door.
 
 The original distribution is still in this repo: `Zombie Hunt.jar` (an Eclipse
 runnable jar, classes only) and the `files/` folder it loads at runtime
