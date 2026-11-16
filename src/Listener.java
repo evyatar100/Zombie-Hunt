@@ -21,9 +21,8 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	
 	int sensitivity;
 	String now;
+	final boolean remotePointer = "vnc".equalsIgnoreCase(System.getenv("ZH_DISPLAY_MODE"));
 	
-	final String [] arr = {"Very High", "High", "Normal", "Low", "Very Low"}; 
-
 	boolean [] moveState = new boolean[4];
 
 	public Listener(MainPanel mp)
@@ -51,7 +50,7 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	public void setSensitivity(int x)
 	{
 		sensitivity=x;
-		now = arr[x/250-2];
+		now = x + "%";
 	}
 	public void resetMouse()
 	{
@@ -165,18 +164,22 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	}
 
 
-	boolean isMove = true;
 	public void mouseMoved(MouseEvent e)
 	{
-		if(!gameOn) return;
-		if(!isMove)
-			return;
-		mp.rotateYFix(Math.PI/sensitivity*(e.getXOnScreen()-(mp.locationOnScreen.x+(int)mp.magozPoint.x)), mp.pMe.x, mp.pMe.y, mp.pMe.z);
-		mp.rotateXFix(Math.PI/(sensitivity*2)*(e.getYOnScreen()-(mp.locationOnScreen.y+(int)mp.magozPoint.y)), mp.pMe.x, mp.pMe.y, mp.pMe.z);
+		int mouseX = e.getXOnScreen();
+		int mouseY = e.getYOnScreen();
+		int centerX = mp.locationOnScreen.x+(int)mp.magozPoint.x;
+		int centerY = mp.locationOnScreen.y+(int)mp.magozPoint.y;
+		int deltaX = mouseX-centerX;
+		int deltaY = mouseY-centerY;
 
-		isMove=false;
-		resetMouse();
-		isMove=true;
+		if(!gameOn || (deltaX==0 && deltaY==0))
+			return;
+
+		mp.rotateYFix(Math.PI*sensitivity/100000*deltaX, mp.pMe.x, mp.pMe.y, mp.pMe.z);
+		mp.rotateXFix(Math.PI*sensitivity/200000*deltaY, mp.pMe.x, mp.pMe.y, mp.pMe.z);
+		if(!remotePointer)
+			resetMouse();
 	}
 
 	public void mouseClicked(MouseEvent e) 
@@ -223,10 +226,8 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	
 	public void mouseEntered(MouseEvent e) 
 	{
-		if(!gameOn) return;
-		isMove=false;
-		resetMouse();
-		isMove=true;
+		if(gameOn && !remotePointer)
+			resetMouse();
 
 	}
 	
@@ -235,9 +236,8 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 		if(a)
 		{
 			gameOn=true;
-			isMove=false;
-			resetMouse();
-			isMove=true;
+			if(!remotePointer)
+				resetMouse();
 		}
 		else
 		{
@@ -249,7 +249,6 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	
 	public void mouseExited(MouseEvent e) 
 	{
-
 	}
 
 	public void mousePressed(MouseEvent e) 
@@ -264,7 +263,7 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 
 	public void mouseDragged(MouseEvent e) 
 	{
-
+		mouseMoved(e);
 	}
 
 }

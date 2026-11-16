@@ -222,10 +222,10 @@ public class MainPanel extends JPanel implements ActionListener
 		add(resume);
 		resume.setEnabled(false);
 
-		sensitivity = new JSlider(500,1500,1000);
-		sensitivity.setMajorTickSpacing(250);
+		sensitivity = new JSlider(10,200,100);
+		sensitivity.setMajorTickSpacing(25);
+		sensitivity.setMinorTickSpacing(5);
 		sensitivity.setPaintTicks(true);
-		sensitivity.setSnapToTicks(true);
 		sensitivity.setFocusable(false);
 		add(sensitivity);
 

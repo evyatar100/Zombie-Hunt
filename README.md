@@ -25,4 +25,4 @@ docker run --rm -p 6080:6080 zombie-hunt
 
 Then open http://localhost:6080/vnc.html
 
-Enter starts a round. WASD moves, the mouse looks, left click shoots, right click is a punch, R reloads, Esc pauses.
+Click the game to capture the mouse; Esc releases it. Enter starts a round. WASD moves, the mouse looks, left click shoots, right click is a punch, and R reloads.

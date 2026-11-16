@@ -39,6 +39,9 @@ RUN apt-get update \
        'session.screen0.toolbar.visible: false' \
        > /root/.fluxbox/init
 
+COPY docker/novnc-pointer-lock.js /usr/share/novnc/app/zombie-hunt-pointer-lock.js
+RUN sed -i '/src="app\/ui.js"/a\\    <script type="module" src="app/zombie-hunt-pointer-lock.js"></script>' /usr/share/novnc/vnc.html
+
 WORKDIR /app
 COPY --from=build /src/build/classes ./build/classes
 COPY files ./files
