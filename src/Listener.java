@@ -1,3 +1,5 @@
+import java.awt.IllegalComponentStateException;
+import java.awt.Point;
 import java.awt.Robot;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -47,6 +49,16 @@ KeyListener {
     }
 
     public void resetMouse() {
+        if (this.robot == null) {
+            return;
+        }
+        try {
+            Point onScreen = this.mp.getLocationOnScreen();
+            this.mp.locationOnScreen.setLocation(onScreen);
+        }
+        catch (IllegalComponentStateException illegalComponentStateException) {
+            // panel is not on screen yet
+        }
         this.robot.mouseMove(this.mp.locationOnScreen.x + (int)this.mp.magozPoint.x, this.mp.locationOnScreen.y + (int)this.mp.magozPoint.y);
     }
 

@@ -39,7 +39,7 @@ extends Thread {
         this.bigText = null;
         this.Bc = Color.orange;
         try {
-            this.bigTextFont = Font.createFont(0, new FileInputStream("files/fonts/door.ttf")).deriveFont(0, 40.0f);
+            this.bigTextFont = Font.createFont(0, new FileInputStream("files/fonts/door.TTF")).deriveFont(0, 40.0f);
             this.scoreFont = Font.createFont(0, new FileInputStream("files/fonts/Playbill.ttf")).deriveFont(0, 50.0f);
         }
         catch (Exception e) {

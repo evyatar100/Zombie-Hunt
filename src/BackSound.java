@@ -8,6 +8,8 @@ extends Thread {
     Random rand = new Random();
     Timer tmr;
     Color lightning = new Color(255, 255, 255);
+    volatile boolean running = true;
+    volatile boolean paused = false;
 
     public BackSound(MainPanel myPanel) {
         this.myPanel = myPanel;
@@ -17,7 +19,11 @@ extends Thread {
 
     @Override
     public void run() {
-        while (true) {
+        while (this.running) {
+            if (this.paused) {
+                this.sleepy(200);
+                continue;
+            }
             switch (this.rand.nextInt(20)) {
                 case 0: {
                     new Sound(Sound.type.THUNDER);
@@ -41,6 +47,18 @@ extends Thread {
             }
             this.sleepy(1000);
         }
+    }
+
+    public void halt() {
+        this.running = false;
+    }
+
+    public void pauseLoop() {
+        this.paused = true;
+    }
+
+    public void resumeLoop() {
+        this.paused = false;
     }
 
     private void sleepy(int delay) {

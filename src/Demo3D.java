@@ -21,5 +21,6 @@ public class Demo3D {
         myFrame.add((Component)mainPanel, "Center");
         myFrame.pack();
         myFrame.setVisible(true);
+        mainPanel.requestFocusInWindow();
     }
 }

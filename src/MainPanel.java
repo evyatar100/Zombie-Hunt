@@ -40,8 +40,8 @@ implements ActionListener {
     Point3D magozPoint;
     Point myPoint;
     Point locationOnScreen = new Point(0, 0);
-    Thread animation;
-    Thread backSound;
+    Animation animation;
+    BackSound backSound;
     Random rand = new Random();
     Timer repaintTimer;
     Timer timer;
@@ -120,7 +120,7 @@ implements ActionListener {
 
     public void biuldElem() {
         try {
-            this.startImg = ImageIO.read(new File("files/images/backGround.PNG"));
+            this.startImg = ImageIO.read(new File("files/images/backGround.png"));
             this.scoreFont = Font.createFont(0, new FileInputStream("files/fonts/score.ttf")).deriveFont(0, 25.0f);
         }
         catch (Exception exception) {
@@ -214,6 +214,7 @@ implements ActionListener {
         this.sensitivity.hide();
         this.isGameStarted = true;
         this.listener.game(true);
+        this.requestFocusInWindow();
         this.text.stopShowingScore();
         this.timer.restart();
         this.startAnimaition();
@@ -245,6 +246,7 @@ implements ActionListener {
         this.timer.restart();
         this.life.timer.restart();
         this.resumeAnimation();
+        this.requestFocusInWindow();
     }
 
     public void endGame() {
@@ -349,7 +351,15 @@ implements ActionListener {
         this.arena.openDoor();
         int i = 0;
         while (i < this.zombies.getNumOfZomb()) {
-            if (this.zombies.isForring) continue;
+            if (this.zombies.isForring) {
+                try {
+                    Thread.sleep(1L);
+                }
+                catch (InterruptedException interruptedException) {
+                    // wait until the zombie lists are not being rebuilt
+                }
+                continue;
+            }
             Zombie z = this.zombies.getZomb(i);
             this.turnZomb(z);
             if (this.isClose(z)) {
@@ -570,30 +580,30 @@ implements ActionListener {
 
     public void stopAnimaition() {
         if (this.animation != null) {
-            this.animation.stop();
+            this.animation.halt();
         }
         this.animation = null;
         if (this.backSound != null) {
-            this.backSound.stop();
+            this.backSound.halt();
         }
         this.backSound = null;
     }
 
     public void pauseAnimaition() {
         if (this.animation != null) {
-            this.animation.suspend();
+            this.animation.pauseLoop();
         }
         if (this.backSound != null) {
-            this.backSound.suspend();
+            this.backSound.pauseLoop();
         }
     }
 
     public void resumeAnimation() {
         if (this.animation != null) {
-            this.animation.resume();
+            this.animation.resumeLoop();
         }
         if (this.backSound != null) {
-            this.backSound.resume();
+            this.backSound.resumeLoop();
         }
     }
 
