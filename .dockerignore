@@ -1,0 +1,15 @@
+.git
+.gitignore
+build
+bin
+*.class
+docs
+"Zombie Hunt.jar"
+.dockerignore
+Dockerfile
+docker-compose.yml
+README.md
+.settings
+.classpath
+.project
+**/.DS_Store

@@ -16,4 +16,13 @@ JDK 17 or newer, from this folder:
 ./build.sh run
 ```
 
+Or with Docker (browser via noVNC):
+
+```bash
+docker build -t zombie-hunt .
+docker run --rm -p 6080:6080 zombie-hunt
+```
+
+Then open http://localhost:6080/vnc.html
+
 Enter starts a round. WASD moves, the mouse looks, left click shoots, right click is a punch, R reloads, Esc pauses.
