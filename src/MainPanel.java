@@ -23,6 +23,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -102,6 +103,9 @@ public class MainPanel extends JPanel implements ActionListener
 	double zombSpeed;
 
 	boolean isUsingCheats = false, isShowHits = false, isOneShoot = false, isShowMap = false;
+	boolean isDebugMode;
+	private final AtomicInteger pendingDebugKills = new AtomicInteger();
+	private volatile int debugKillCount;
 
 	boolean isGameStarted;
 
@@ -132,6 +136,12 @@ public class MainPanel extends JPanel implements ActionListener
 		else
 		{
 			page.drawImage(startImg, 0, 0, this);
+			if (isDebugMode)
+			{
+				page.setColor(Color.orange);
+				page.setFont(new Font("Arial", Font.BOLD, 16));
+				page.drawString("DEBUG MODE ON", 510, 82);
+			}
 
 			page.setColor(new Color(240,240,240));
 			page.setFont(new Font(getName(), 0, 20));
@@ -268,6 +278,7 @@ public class MainPanel extends JPanel implements ActionListener
 		numOfSpawns = 0;
 		chanceOfNewZomb = 10;
 		zombSpeed =10;
+		debugKillCount = 0;
 
 		newGame.hide();
 		exit.hide();
@@ -444,6 +455,7 @@ public class MainPanel extends JPanel implements ActionListener
 	
 	public void play()
 	{
+		applyPendingDebugKills();
 		bullets.spin();
 		listener.move();
 		arena.openDoor();
@@ -477,6 +489,46 @@ public class MainPanel extends JPanel implements ActionListener
 				catch (InterruptedException e) {}
 			}
 		}
+	}
+
+	private void applyPendingDebugKills()
+	{
+		int requests = pendingDebugKills.getAndSet(0);
+		for (int i = 0; i < requests; i++)
+		{
+			int living = zombies.getNumOfZomb();
+			if (living == 0)
+			{
+				text.addText("No live zombies", Color.orange);
+				continue;
+			}
+
+			Zombie target = zombies.getZomb(rand.nextInt(living));
+			killZomb(target);
+			isUsingCheats = true;
+			debugKillCount++;
+			text.addText("Debug kill", Color.orange);
+		}
+	}
+
+	public void toggleDebugMode()
+	{
+		isDebugMode = !isDebugMode;
+		if (isDebugMode)
+		{
+			isUsingCheats = true;
+			text.addText("Debug mode on", Color.orange);
+		}
+		else
+		{
+			text.addText("Debug mode off", Color.orange);
+		}
+		repaint();
+	}
+
+	public void requestDebugKill()
+	{
+		pendingDebugKills.incrementAndGet();
 	}
 
 	public void moveZomb(Zombie zomb)
@@ -829,6 +881,18 @@ public class MainPanel extends JPanel implements ActionListener
 		text.show(page);
 		life.convertAndShow(page);
 		map.printMap(page);
+		if (isDebugMode)
+		{
+			page.setColor(new Color(0, 0, 0, 180));
+			page.fillRoundRect(getWidth()-270, 12, 258, 64, 10, 10);
+			page.setColor(Color.orange);
+			page.setFont(new Font("Arial", Font.BOLD, 15));
+			page.drawString("DEBUG MODE", getWidth()-256, 32);
+			page.setColor(Color.white);
+			page.setFont(new Font("Arial", Font.PLAIN, 13));
+			page.drawString("Click to kill a random live zombie", getWidth()-256, 49);
+			page.drawString("Kills: "+debugKillCount+"  Live: "+zombies.getNumOfZomb(), getWidth()-256, 65);
+		}
 	}
 
 	public void makeShapes()
@@ -988,7 +1052,11 @@ public class MainPanel extends JPanel implements ActionListener
 		code = JOptionPane.showInputDialog(null, null, null, JOptionPane.QUESTION_MESSAGE);
 		if(code==null)
 			return;
-		if(code.toLowerCase().compareTo("reset score")==0)
+		if(code.trim().equalsIgnoreCase("debug mode"))
+		{
+			toggleDebugMode();
+		}
+		else if(code.toLowerCase().compareTo("reset score")==0)
 		{
 			text.restartScore();
 		}

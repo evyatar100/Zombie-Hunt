@@ -8,7 +8,7 @@ public class Zombies
 {
 	Random rand = new Random();
 	
-	boolean isForring = false;
+	volatile boolean isForring = false;
 	MainPanel mP;
 	ArrayList<Zombie> zombies;
 	ArrayList<Zombie> deadZombies;

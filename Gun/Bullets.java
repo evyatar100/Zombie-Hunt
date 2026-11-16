@@ -15,8 +15,6 @@ public class Bullets
 	
 	Point3D pStart = MainPanel.pStart;
 	
-	boolean isForing = false;
-
 	public Bullets (Point3D magozPoint, Map map) 
 	{		
 		this.magozPoint=magozPoint;
@@ -26,11 +24,11 @@ public class Bullets
 		bullets = new ArrayList<Bullet>();
 	}
 
-	public void restart()
+	public synchronized void restart()
 	{	
 		bullets.clear();
 	}
-	public void addBullet(Point place, int ammo)
+	public synchronized void addBullet(Point place, int ammo)
 	{
 		Bullet temp = new Bullet(magozPoint);
 
@@ -39,54 +37,43 @@ public class Bullets
 		bullets.add(temp);
 		numOfBullets++;
 	}
-	public void removeBullet (Bullet b)
+	public synchronized void removeBullet (Bullet b)
 	{
 		bullets.remove(b);
 	}
-	public void buildShape()
+	public synchronized void buildShape()
 	{
 		for (Bullet b : bullets) 
 		{
 			b.buildShape(pStart.x+b.place.x, pStart.y+500, pStart.z+b.place.y);
 		}
 	}
-	public void fromPointToGuf()
+	public synchronized void fromPointToGuf()
 	{
-		if(isForing)
-			return;
-		isForing=true;
 		for (Bullet b : bullets) 
 		{
 			b.fromPointToGuf();
 		}
-		isForing=false;
 	}
 
 
-	public void mullMat(Matrix3D mat)
+	public synchronized void mullMat(Matrix3D mat)
 	{
-		if(isForing)
-			return;
-		isForing=true;
 		for (Bullet b : bullets) 
 		{
 			b.mullMat(mat);
 		}
-		isForing=false;
 	}
-	public ArrayList<Bullet> getBullets()
+	public synchronized ArrayList<Bullet> getBullets()
 	{
-		return bullets;
+		return new ArrayList<Bullet>(bullets);
 	}
-	public void spin()
+	public synchronized void spin()
 	{
-		while(isForing){}
-		isForing=true;
 		for (Bullet b : bullets) 
 		{
 			b.spin();
 		}
-		isForing=false;
 	}
 
 

@@ -185,6 +185,7 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	public void mouseClicked(MouseEvent e) 
 	{
 		if(!gameOn) return;
+		if (mp.isDebugMode) return;
 		switch (e.getButton())
 		{
 		case MouseEvent.BUTTON1:
@@ -253,6 +254,8 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 
 	public void mousePressed(MouseEvent e) 
 	{
+		if (gameOn && mp.isDebugMode)
+			mp.requestDebugKill();
 
 	}
 
