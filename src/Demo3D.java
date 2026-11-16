@@ -29,6 +29,7 @@ public class Demo3D
 		myFrame.add(mainPanel,BorderLayout.CENTER);
 		myFrame.pack();
 		myFrame.setVisible(true);
+		mainPanel.requestFocusInWindow();
 	}
 }
 

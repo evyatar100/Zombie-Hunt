@@ -9,6 +9,8 @@ public class BackSound extends Thread
 	Random rand = new Random();
 	Timer tmr;
 	Color lightning = new Color(255, 255, 255);
+	volatile boolean running = true;
+	volatile boolean paused = false;
 
 	public BackSound(MainPanel myPanel)
 	{
@@ -19,8 +21,13 @@ public class BackSound extends Thread
 
 	public void run()
 	{
-		for (;;)
+		while (running)
 		{
+			if (paused)
+			{
+				sleepy(200);
+				continue;
+			}
 			switch(rand.nextInt(20))	
 			{
 			case 0:
@@ -49,6 +56,22 @@ public class BackSound extends Thread
 			sleepy(1000);
 		}
 	}
+
+	public void halt()
+	{
+		running = false;
+	}
+
+	public void pauseLoop()
+	{
+		paused = true;
+	}
+
+	public void resumeLoop()
+	{
+		paused = false;
+	}
+
 	private void sleepy(int delay)
 	{
 		try 

@@ -1,3 +1,5 @@
+import java.awt.IllegalComponentStateException;
+import java.awt.Point;
 import java.awt.Robot;
 
 import java.awt.event.KeyEvent;
@@ -53,6 +55,14 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	}
 	public void resetMouse()
 	{
+		if (robot==null)
+			return;
+		try
+		{
+			Point onScreen = mp.getLocationOnScreen();
+			mp.locationOnScreen.setLocation(onScreen);
+		}
+		catch (IllegalComponentStateException e) {}
 		robot.mouseMove(mp.locationOnScreen.x+(int)mp.magozPoint.x, mp.locationOnScreen.y+(int)mp.magozPoint.y);
 	}
 	public void keyPressed(KeyEvent e) 

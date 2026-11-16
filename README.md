@@ -8,12 +8,11 @@ The view is a software 3D projection: no game engine, just matrices and polygons
 Normal zombies are green blocks with red hands and feet. Some are smaller, and
 every so often a huge one comes through a door.
 
-The original distribution is still in this repo: `Zombie Hunt.jar` (an Eclipse
-runnable jar, classes only) and the `files/` folder it loads at runtime
-(sounds, fonts, the menu image, and `scores.dat`). There were no `.java`
-sources in the archive. `src/` was recovered by decompiling those classes
-with [CFR](https://www.benf.org/other/cfr/) 0.152. Gameplay and the look of
-the code are the original ones, with a few fixes so it runs on a current JDK.
+The sources are the original Eclipse project. There is no `package` line:
+`src`, `Zombie`, `Gun`, and `Obsticales` are four source folders of one
+default package (see `.classpath`). `Zombie Hunt.jar` is the old runnable
+jar, and `files/` is what the game loads at runtime. A few lines were
+changed so the same code runs on a current JDK.
 
 ## Requirements
 
@@ -71,7 +70,7 @@ When your health is gone the view tips over and the round ends.
 
 ## What was fixed
 
-The recovered sources are the decompiled originals, plus only these changes:
+The sources are the originals, plus only these changes:
 
 - `Thread.stop`, `suspend`, and `resume` throw `UnsupportedOperationException`
   on current JDKs, so a new game, pause, or death could not finish. The
@@ -83,3 +82,5 @@ The recovered sources are the decompiled originals, plus only these changes:
   after you press New Game.
 - While the zombie lists are being rebuilt, the game loop waits instead of
   spinning.
+- An unused `javax.jws.Oneway` import was removed. That class is not in the
+  JDK.

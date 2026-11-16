@@ -25,7 +25,6 @@ import java.util.Collections;
 import java.util.Random;
 
 import javax.imageio.ImageIO;
-import javax.jws.Oneway;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
@@ -55,7 +54,8 @@ public class MainPanel extends JPanel implements ActionListener
 	Point3D magozPoint;
 	Point myPoint, locationOnScreen=new Point(0, 0);
 
-	Thread animation, backSound;
+	Animation animation;
+	BackSound backSound;
 
 	Random rand = new Random();
 
@@ -151,7 +151,7 @@ public class MainPanel extends JPanel implements ActionListener
 	public void biuldElem()
 	{
 		try {
-			startImg = ImageIO.read(new File("files/images/backGround.PNG"));
+			startImg = ImageIO.read(new File("files/images/backGround.png"));
 			scoreFont = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("files/fonts/score.ttf")).deriveFont(Font.PLAIN, 25);
 		} catch (Exception e) {}
 
@@ -277,6 +277,7 @@ public class MainPanel extends JPanel implements ActionListener
 
 		isGameStarted=true;
 		listener.game(true);
+		requestFocusInWindow();
 		text.stopShowingScore();
 
 		timer.restart();
@@ -314,6 +315,7 @@ public class MainPanel extends JPanel implements ActionListener
 		timer.restart();
 		life.timer.restart();
 		resumeAnimation();
+		requestFocusInWindow();
 	}
 
 	public void endGame()
@@ -465,6 +467,14 @@ public class MainPanel extends JPanel implements ActionListener
 					marchZomb(z);
 				}
 				i++;
+			}
+			else
+			{
+				try
+				{
+					Thread.sleep(1);
+				}
+				catch (InterruptedException e) {}
 			}
 		}
 	}
@@ -763,13 +773,13 @@ public class MainPanel extends JPanel implements ActionListener
 	{
 		if (animation!=null)
 		{
-			animation.stop();
+			animation.halt();
 		}
 		animation=null;
 
 		if (backSound!=null)
 		{
-			backSound.stop();
+			backSound.halt();
 		}
 		backSound=null;
 	}
@@ -777,22 +787,22 @@ public class MainPanel extends JPanel implements ActionListener
 	{
 		if (animation!=null)
 		{
-			animation.suspend();
+			animation.pauseLoop();
 		}
 		if (backSound!=null)
 		{
-			backSound.suspend();
+			backSound.pauseLoop();
 		}
 	}
 	public void resumeAnimation()
 	{
 		if (animation!=null)
 		{
-			animation.resume();
+			animation.resumeLoop();
 		}
 		if (backSound!=null)
 		{
-			backSound.resume();
+			backSound.resumeLoop();
 		}
 	}
 

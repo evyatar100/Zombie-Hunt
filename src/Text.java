@@ -40,7 +40,7 @@ public class Text extends Thread
 		Bc = Color.orange;
 		
 		try {
-			bigTextFont = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("files/fonts/door.ttf")).deriveFont(Font.PLAIN, 40);
+			bigTextFont = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("files/fonts/door.TTF")).deriveFont(Font.PLAIN, 40);
 			scoreFont = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("files/fonts/Playbill.ttf")).deriveFont(Font.PLAIN, 50);
 		} catch (Exception e) {System.out.println("font not found");}
 		
