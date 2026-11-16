@@ -4,87 +4,81 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Random;
 
-public class Sound
-extends Thread {
-    AudioClip clip;
-    String URL;
-    int clipLength;
-    int delay = 0;
-    Random rand = new Random();
 
-    public Sound(type t) {
-        switch (t) {
-            case GUN: {
-                this.URL = "file:files/sounds/GunFire.wav";
-                this.clipLength = 2000;
-                break;
-            }
-            case THUNDER: {
-                this.URL = "file:files/sounds/Thunder.wav";
-                this.clipLength = 3000;
-                break;
-            }
-            case PUNCH: {
-                this.URL = "file:files/sounds/Punch.wav";
-                this.clipLength = 1000;
-                break;
-            }
-            case RELOAD: {
-                this.URL = "file:files/sounds/Reload.wav";
-                this.clipLength = 1000;
-                break;
-            }
-            case AMMO: {
-                this.URL = "file:files/sounds/Ammo.wav";
-                this.clipLength = 1000;
-                break;
-            }
-            case SIRAN: {
-                this.URL = "file:files/sounds/Siran.wav";
-                this.clipLength = 1000;
-                break;
-            }
-            case ZOMBIE: {
-                int r2 = this.rand.nextInt(7);
-                this.URL = "file:files/sounds/Back_Sounds/Sound" + r2 + ".wav";
-                this.clipLength = 3000;
-                break;
-            }
-            case GUN_PUNCH: {
-                this.URL = "file:files/sounds/GunPunch.wav";
-                this.clipLength = 500;
-            }
-        }
-        try {
-            this.clip = Applet.newAudioClip(new URL(this.URL));
-        }
-        catch (MalformedURLException e) {
-            e.printStackTrace();
-        }
-        this.start();
-    }
-
-    @Override
-    public void run() {
-        try {
-            Sound.sleep(this.delay);
-            this.clip.play();
-            Sound.sleep(this.clipLength);
-        }
-        catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    static enum type {
-        GUN,
-        THUNDER,
-        PUNCH,
-        RELOAD,
-        AMMO,
-        ZOMBIE,
-        GUN_PUNCH,
-        SIRAN;
-
-    }
+public class Sound extends Thread
+{
+	AudioClip clip;
+	String URL;
+	int clipLength;
+	int delay;
+	
+	Random rand = new Random();
+		
+	enum type {GUN, THUNDER, PUNCH, RELOAD, AMMO, ZOMBIE, GUN_PUNCH, SIRAN};
+	public Sound(type t) 
+	{
+		delay=0;
+		switch (t)
+		{
+		case GUN:
+			URL="file:files/sounds/GunFire.wav";
+			clipLength=2000;
+			break;
+		case THUNDER:
+			URL="file:files/sounds/Thunder.wav";
+			clipLength=3000;
+			break;
+		case PUNCH:
+			URL="file:files/sounds/Punch.wav";
+			clipLength=1000;
+			break;
+		case RELOAD:
+			URL="file:files/sounds/Reload.wav";
+			clipLength=1000;
+			break;
+		case AMMO:
+			URL="file:files/sounds/Ammo.wav";
+			clipLength=1000;
+			break;
+			
+		case SIRAN:
+			URL="file:files/sounds/Siran.wav";
+			clipLength=1000;
+			break;
+			
+		case ZOMBIE:
+			int r2 = rand.nextInt(7);
+			URL="file:files/sounds/Back_Sounds/Sound"+r2+".wav";
+			clipLength=3000;
+			break;
+			
+		case GUN_PUNCH:
+			URL="file:files/sounds/GunPunch.wav";
+			clipLength=500;
+			break;
+		}
+		try 
+		{
+			clip = Applet.newAudioClip(new URL(URL));
+		}
+		catch (MalformedURLException e) 
+		{
+			e.printStackTrace();
+		}
+		start();
+	}
+	public void run()
+	{
+		
+		try 
+		{
+			sleep(delay);
+			clip.play();
+			sleep(clipLength);
+		} 
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+	}
 }
