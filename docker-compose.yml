@@ -1,0 +1,13 @@
+services:
+  zombie-hunt:
+    build: .
+    image: zombie-hunt
+    ports:
+      - "6080:6080"
+      - "5900:5900"
+    # Optional host display instead of noVNC:
+    # environment:
+    #   ZH_DISPLAY_MODE: host
+    #   DISPLAY: ${DISPLAY}
+    # volumes:
+    #   - /tmp/.X11-unix:/tmp/.X11-unix
