@@ -16,9 +16,8 @@ import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -40,9 +39,7 @@ public class MainPanel extends JPanel implements ActionListener
 	Cursor blankCursor = Toolkit.getDefaultToolkit().createCustomCursor(cursorImg, new Point(0, 0), "blank cursor");
 
 	Toolkit toolkit = Toolkit.getDefaultToolkit();
-	Image cImg = toolkit.getImage("files/images/Cursor.PNG");
-
-	Cursor defult = toolkit.createCustomCursor(cImg, new Point(5,0), "defult");
+	Cursor defult = loadCursor();
 
 	Image startImg;
 
@@ -121,6 +118,21 @@ public class MainPanel extends JPanel implements ActionListener
 		setCursor(defult);
 	}
 
+	private Cursor loadCursor()
+	{
+		try (InputStream image = Resources.open("images/Cursor.PNG"))
+		{
+			BufferedImage cursor = ImageIO.read(image);
+			if (cursor != null)
+				return toolkit.createCustomCursor(cursor, new Point(5, 0), "game cursor");
+		}
+		catch (Exception e)
+		{
+			System.err.println("Cursor image not found: " + e);
+		}
+		return Cursor.getDefaultCursor();
+	}
+
 	public void paintComponent (Graphics page)
 	{
 		super.paintComponent(page);
@@ -160,10 +172,13 @@ public class MainPanel extends JPanel implements ActionListener
 
 	public void biuldElem()
 	{
-		try {
-			startImg = ImageIO.read(new File("files/images/backGround.png"));
-			scoreFont = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("files/fonts/score.ttf")).deriveFont(Font.PLAIN, 25);
-		} catch (Exception e) {}
+		scoreFont = new Font(Font.SANS_SERIF, Font.PLAIN, 25);
+		try (InputStream image = Resources.open("images/backGround.png")) {
+			startImg = ImageIO.read(image);
+		} catch (IOException e) {System.err.println("Background image not found: " + e);}
+		try (InputStream font = Resources.open("fonts/score.ttf")) {
+			scoreFont = Font.createFont(Font.TRUETYPE_FONT, font).deriveFont(Font.PLAIN, 25);
+		} catch (Exception e) {System.err.println("High-score font not found: " + e);}
 
 		makeBottons();
 		magozPoint=new Point3D(950/2, 650/2, 1000);

@@ -2,22 +2,14 @@
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
 
 
 public class Text extends Thread
 {
 	int score;
 	
-	Integer highScore = null;
-	private final String HIGHSCORE_FILE = "files/scores.dat";
-	ObjectOutputStream outputStream = null;
-	ObjectInputStream inputStream = null;
+	Integer highScore = 0;
 	
 	String str1, str2, bigText, scoreStr;
 	int delay1=0, delay2=0, delay3=0;;
@@ -39,10 +31,14 @@ public class Text extends Thread
 		
 		Bc = Color.orange;
 		
-		try {
-			bigTextFont = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("files/fonts/door.TTF")).deriveFont(Font.PLAIN, 40);
-			scoreFont = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("files/fonts/Playbill.ttf")).deriveFont(Font.PLAIN, 50);
-		} catch (Exception e) {System.out.println("font not found");}
+		bigTextFont = new Font(Font.SANS_SERIF, Font.BOLD, 40);
+		scoreFont = new Font(Font.SANS_SERIF, Font.PLAIN, 50);
+		try (InputStream font = Resources.open("fonts/door.TTF")) {
+			bigTextFont = Font.createFont(Font.TRUETYPE_FONT, font).deriveFont(Font.PLAIN, 40);
+		} catch (Exception e) {System.err.println("Door font not found: " + e);}
+		try (InputStream font = Resources.open("fonts/Playbill.ttf")) {
+			scoreFont = Font.createFont(Font.TRUETYPE_FONT, font).deriveFont(Font.PLAIN, 50);
+		} catch (Exception e) {System.err.println("Score font not found: " + e);}
 		
 		loadScoreFile();
 		start();
@@ -140,7 +136,6 @@ public class Text extends Thread
 	}
 	public void setHighScore()
 	{
-		loadScoreFile();
 		if(score>highScore)
 		{
 			highScore=score;
@@ -149,7 +144,6 @@ public class Text extends Thread
 	}
 	public int getHighScore()
 	{
-		loadScoreFile();
 		return highScore;
 	}
 	public void restartScore()
@@ -159,46 +153,11 @@ public class Text extends Thread
 	}
 	public void loadScoreFile() 
 	{
-		try {
-			inputStream = new ObjectInputStream(new FileInputStream(HIGHSCORE_FILE));
-			highScore = (Integer) inputStream.readObject();
-		} catch (FileNotFoundException e) {
-			System.out.println("[Laad] FNF Error: " + e.getMessage());
-			
-		} catch (Exception e) {
-			System.out.println("[Laad] IO Error: " + e.getMessage());
-		} finally 
-		{
-			try {
-				if (outputStream != null) 
-				{
-					outputStream.flush();
-					outputStream.close();
-				}
-			} catch (IOException e) {
-				System.out.println("[Laad] IO Error: " + e.getMessage());
-			}
-		}
+		highScore = HighScoreStore.load();
 	}
 	public void updateScoreFile() 
 	{
-		try {
-			outputStream = new ObjectOutputStream(new FileOutputStream(HIGHSCORE_FILE));
-			outputStream.writeObject(highScore);
-		} catch (FileNotFoundException e) {
-			System.out.println("[Update] FNF Error: " + e.getMessage() + ",the program will try and make a new file");
-		} catch (IOException e) {
-			System.out.println("[Update] IO Error: " + e.getMessage());
-		} finally {
-			try {
-				if (outputStream != null) {
-					outputStream.flush();
-					outputStream.close();
-				}
-			} catch (IOException e) {
-				System.out.println("[Update] Error: " + e.getMessage());
-			}
-		}
+		HighScoreStore.save(highScore);
 	}
 	
 	private void sleepy(int wait)

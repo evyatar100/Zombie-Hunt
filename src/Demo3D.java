@@ -12,6 +12,7 @@ public class Demo3D
 {
 	public static void main(String[] args) 
 	{
+		Sound.preload();
 		Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
 		final int width = (int) screenSize.getWidth();
 		final int height = (int) screenSize.getHeight();

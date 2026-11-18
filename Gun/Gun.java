@@ -2,7 +2,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Point;
-import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Random;
 
 public class Gun extends Thread
@@ -55,9 +55,10 @@ public class Gun extends Thread
 
 		this.magozPoint=magozPoint;
 		
-		try {
-			playbill = Font.createFont(Font.TRUETYPE_FONT, new FileInputStream("files/fonts/Playbill.ttf")).deriveFont(Font.PLAIN, 50);
-		} catch (Exception e) {System.out.println("playbill font not found");}	
+		playbill = new Font(Font.SANS_SERIF, Font.PLAIN, 50);
+		try (InputStream font = Resources.open("fonts/Playbill.ttf")) {
+			playbill = Font.createFont(Font.TRUETYPE_FONT, font).deriveFont(Font.PLAIN, 50);
+		} catch (Exception e) {System.err.println("Playbill font not found: " + e);}
 
 		start();
 	}
