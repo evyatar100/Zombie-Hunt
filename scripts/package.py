@@ -57,7 +57,10 @@ def main() -> None:
     if not re.fullmatch(r"\d+\.\d+\.\d+", version):
         parser.error("--version must be MAJOR.MINOR.PATCH")
     # jpackage requires a positive first component even for a portable app image.
-    app_version = "1.0.0" if version.startswith("0.") else version
+    major, minor, patch = (int(part) for part in version.split("."))
+    if major == 0 and minor == 0:
+        parser.error("0.0.x versions cannot be packaged; start at 0.1.0")
+    app_version = f"1.{minor - 1}.{patch}" if major == 0 else version
     system, architecture, suffix = target()
     jdk = args.jdk or (Path(os.environ["JAVA_HOME"]) if os.environ.get("JAVA_HOME") else None)
     javac = jdk_tool("javac", jdk)
@@ -85,6 +88,16 @@ def main() -> None:
 
     app_jar = input_dir / "zombie-hunt.jar"
     run(jar, "--create", "--file", app_jar, "--main-class", "Demo3D", "-C", classes, ".")
+
+    if system == "macos":
+        jdk_home = jdk or Path(javac).resolve().parent.parent
+        include = jdk_home / "include"
+        if not (include / "jni.h").is_file():
+            raise SystemExit(f"JNI headers were not found under {jdk_home}; pass --jdk or set JAVA_HOME")
+        run("clang", "-dynamiclib", "-O2", "-mmacosx-version-min=11.0",
+            "-I", include, "-I", include / "darwin",
+            ROOT / "native" / "mac_mouse.c", "-framework", "ApplicationServices",
+            "-o", input_dir / "libzombie_mouse.dylib")
 
     icon = ROOT / "packaging" / {"macos": "icon.icns", "windows": "icon.ico", "linux": "icon.png"}[system]
     command = [jpackage, "--type", "app-image", "--name", APP_NAME,

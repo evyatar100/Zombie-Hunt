@@ -32,6 +32,7 @@ def verify(path: Path) -> None:
         launcher = root + "Contents/MacOS/Zombie Hunt"
         runtime = root + "Contents/runtime/Contents/Home/lib/modules"
         jar = root + "Contents/app/zombie-hunt.jar"
+        native_mouse = root + "Contents/app/libzombie_mouse.dylib"
     elif system == "windows":
         launcher = root + "Zombie Hunt.exe"
         runtime = root + "runtime/lib/modules"
@@ -44,7 +45,10 @@ def verify(path: Path) -> None:
     if extension == "zip":
         with zipfile.ZipFile(path) as archive:
             names = set(archive.namelist())
-            missing = {launcher, runtime, jar} - names
+            required = {launcher, runtime, jar}
+            if system == "macos":
+                required.add(native_mouse)
+            missing = required - names
             if missing:
                 raise ValueError(f"Missing from {path.name}: {sorted(missing)}")
             if system == "macos" and not archive.getinfo(launcher).external_attr >> 16 & 0o111:

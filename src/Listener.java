@@ -58,15 +58,16 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	}
 	public void resetMouse()
 	{
-		if (robot==null)
-			return;
 		try
 		{
 			Point onScreen = mp.getLocationOnScreen();
 			mp.locationOnScreen.setLocation(onScreen);
 		}
 		catch (IllegalComponentStateException e) { return; }
-		robot.mouseMove(mp.locationOnScreen.x+(int)mp.magozPoint.x, mp.locationOnScreen.y+(int)mp.magozPoint.y);
+		int centerX = mp.locationOnScreen.x+(int)mp.magozPoint.x;
+		int centerY = mp.locationOnScreen.y+(int)mp.magozPoint.y;
+		if (!MacMouse.warp(centerX, centerY) && robot != null)
+			robot.mouseMove(centerX, centerY);
 	}
 	public void keyPressed(KeyEvent e) 
 	{
