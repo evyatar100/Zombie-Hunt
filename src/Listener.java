@@ -1,6 +1,7 @@
 import java.awt.IllegalComponentStateException;
 import java.awt.Point;
 import java.awt.Robot;
+import java.awt.Toolkit;
 
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
@@ -22,6 +23,9 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	int sensitivity;
 	String now;
 	final boolean remotePointer = "vnc".equalsIgnoreCase(System.getenv("ZH_DISPLAY_MODE"));
+	final Point remoteCenter = new Point(
+		Toolkit.getDefaultToolkit().getScreenSize().width / 2,
+		Toolkit.getDefaultToolkit().getScreenSize().height / 2);
 	
 	boolean [] moveState = new boolean[4];
 
@@ -61,7 +65,7 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 			Point onScreen = mp.getLocationOnScreen();
 			mp.locationOnScreen.setLocation(onScreen);
 		}
-		catch (IllegalComponentStateException e) {}
+		catch (IllegalComponentStateException e) { return; }
 		robot.mouseMove(mp.locationOnScreen.x+(int)mp.magozPoint.x, mp.locationOnScreen.y+(int)mp.magozPoint.y);
 	}
 	public void keyPressed(KeyEvent e) 
@@ -166,14 +170,17 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 
 	public void mouseMoved(MouseEvent e)
 	{
+		if(!gameOn)
+			return;
+
 		int mouseX = e.getXOnScreen();
 		int mouseY = e.getYOnScreen();
-		int centerX = mp.locationOnScreen.x+(int)mp.magozPoint.x;
-		int centerY = mp.locationOnScreen.y+(int)mp.magozPoint.y;
+		int centerX = remotePointer ? remoteCenter.x : mp.locationOnScreen.x+(int)mp.magozPoint.x;
+		int centerY = remotePointer ? remoteCenter.y : mp.locationOnScreen.y+(int)mp.magozPoint.y;
 		int deltaX = mouseX-centerX;
 		int deltaY = mouseY-centerY;
 
-		if(!gameOn || (deltaX==0 && deltaY==0))
+		if(deltaX==0 && deltaY==0)
 			return;
 
 		mp.rotateYFix(Math.PI*sensitivity/100000*deltaX, mp.pMe.x, mp.pMe.y, mp.pMe.z);
@@ -250,6 +257,8 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	
 	public void mouseExited(MouseEvent e) 
 	{
+		if(gameOn && !remotePointer)
+			resetMouse();
 	}
 
 	public void mousePressed(MouseEvent e) 

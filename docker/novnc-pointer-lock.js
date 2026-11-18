@@ -1,10 +1,19 @@
-const MAX_DELTA = 300;
+import UI from "./ui.js";
+
+// The Java listener measures VNC coordinates from the desktop center.
+// Keep each VNC move inside the game panel and drain large mouse flicks
+// over several frames instead of dropping the excess movement.
+const MAX_STEP = 100;
+const RECENTER_DELAY_MS = 8;
 
 let canvas;
-let forwarding = false;
 let wasLocked = false;
 let initialLockClick = false;
 let suppressReacquireClick = false;
+let pendingX = 0;
+let pendingY = 0;
+let moveFrame = null;
+let recenterTimer = null;
 
 const hint = document.createElement("div");
 hint.textContent = "Click the game to capture the mouse · Esc releases it";
@@ -28,29 +37,34 @@ function stop(event) {
     event.stopImmediatePropagation();
 }
 
-function center() {
+function sendMove(deltaX = 0, deltaY = 0) {
+    if(!UI.rfb || !canvas.width || !canvas.height)
+        return;
     const bounds = canvas.getBoundingClientRect();
-    return {
-        x: bounds.left + bounds.width / 2,
-        y: bounds.top + bounds.height / 2
-    };
+    // Firefox pins synthetic DOM mouse events to the lock point. Send the
+    // position through noVNC's VNC input handler instead.
+    UI.rfb._handleMouseMove(
+        bounds.width / 2 + deltaX * bounds.width / canvas.width,
+        bounds.height / 2 + deltaY * bounds.height / canvas.height);
 }
 
-function forwardMouse(type, source, x, y) {
-    forwarding = true;
-    canvas.dispatchEvent(new MouseEvent(type, {
-        bubbles: true,
-        cancelable: true,
-        view: window,
-        clientX: x,
-        clientY: y,
-        screenX: x,
-        screenY: y,
-        button: source.button,
-        buttons: source.buttons,
-        detail: source.detail
-    }));
-    forwarding = false;
+function clearMovement() {
+    pendingX = 0;
+    pendingY = 0;
+    if(moveFrame !== null)
+        cancelAnimationFrame(moveFrame);
+    if(recenterTimer !== null)
+        clearTimeout(recenterTimer);
+    moveFrame = null;
+    recenterTimer = null;
+}
+
+function sendButton(event) {
+    if(!UI.rfb)
+        return;
+    const bounds = canvas.getBoundingClientRect();
+    UI.rfb._handleMouseButton(bounds.width / 2, bounds.height / 2,
+        event.type === "mousedown", 1 << event.button);
 }
 
 function requestLock() {
@@ -79,34 +93,47 @@ function requestLock() {
 }
 
 function handleMove(event) {
-    if(forwarding || document.pointerLockElement !== canvas)
+    if(document.pointerLockElement !== canvas)
         return;
 
     stop(event);
-    const origin = center();
-    const deltaX = Math.max(-MAX_DELTA, Math.min(MAX_DELTA, event.movementX));
-    const deltaY = Math.max(-MAX_DELTA, Math.min(MAX_DELTA, event.movementY));
+    pendingX += event.movementX;
+    pendingY += event.movementY;
+    if(moveFrame === null && recenterTimer === null)
+        moveFrame = requestAnimationFrame(flushMovement);
+}
 
+function flushMovement() {
+    moveFrame = null;
+    if(document.pointerLockElement !== canvas || !canvas.width || !canvas.height)
+        return;
+
+    const deltaX = Math.max(-MAX_STEP, Math.min(MAX_STEP, pendingX));
+    const deltaY = Math.max(-MAX_STEP, Math.min(MAX_STEP, pendingY));
     if(deltaX === 0 && deltaY === 0)
         return;
 
-    forwardMouse("mousemove", event, origin.x + deltaX, origin.y + deltaY);
-    forwardMouse("mousemove", event, origin.x, origin.y);
+    pendingX -= deltaX;
+    pendingY -= deltaY;
+    sendMove(deltaX, deltaY);
+
+    recenterTimer = setTimeout(() => {
+        recenterTimer = null;
+        if(document.pointerLockElement !== canvas)
+            return;
+        sendMove();
+        if(pendingX !== 0 || pendingY !== 0)
+            moveFrame = requestAnimationFrame(flushMovement);
+    }, RECENTER_DELAY_MS);
 }
 
 function handleButton(event) {
-    if(forwarding)
-        return;
-
     if(document.pointerLockElement === canvas)
     {
         if(initialLockClick && event.type === "mouseup")
         {
             initialLockClick = false;
-            setTimeout(() => {
-                const origin = center();
-                forwardMouse("mousemove", new MouseEvent("mousemove"), origin.x, origin.y);
-            }, 0);
+            setTimeout(() => sendMove(), 0);
             return;
         }
 
@@ -117,8 +144,7 @@ function handleButton(event) {
         }
 
         stop(event);
-        const origin = center();
-        forwardMouse(event.type, event, origin.x, origin.y);
+        sendButton(event);
         return;
     }
 
@@ -135,9 +161,6 @@ function handleButton(event) {
 }
 
 function handleClick(event) {
-    if(forwarding)
-        return;
-
     if(suppressReacquireClick)
     {
         stop(event);
@@ -171,12 +194,19 @@ document.addEventListener("pointerlockchange", () => {
     {
         wasLocked = true;
         if(!initialLockClick)
-        {
-            const origin = center();
-            forwardMouse("mousemove", new MouseEvent("mousemove"), origin.x, origin.y);
-        }
+            sendMove();
+    }
+    else
+    {
+        clearMovement();
+        initialLockClick = false;
     }
 });
+
+document.addEventListener("keydown", event => {
+    if(event.key === "Escape" && document.pointerLockElement === canvas)
+        document.exitPointerLock();
+}, true);
 
 new MutationObserver(findCanvas).observe(document.documentElement, {
     childList: true,
