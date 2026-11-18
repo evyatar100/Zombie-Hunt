@@ -25,6 +25,6 @@ docker run --rm -p 6080:6080 zombie-hunt
 
 Then open http://localhost:6080/vnc.html
 
-Click the game to capture the mouse; Esc releases it. Enter starts a round. WASD moves, the mouse looks, left click shoots, right click is a punch, and R reloads.
+Click the game to capture the mouse and enable sound; Esc releases it. Enter starts a round. WASD moves, the mouse looks, left click shoots, right click is a punch, and R reloads.
 
 Open the existing cheat prompt with F2 and enter `debug mode` to toggle debug mode. While it is on, any mouse click kills a randomly chosen live zombie. Debug mode disables high-score recording for the session.

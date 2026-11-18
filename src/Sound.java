@@ -57,6 +57,11 @@ public class Sound extends Thread
 			clipLength=500;
 			break;
 		}
+		if (BrowserAudio.enabled())
+		{
+			BrowserAudio.emit(URL.substring("file:files/sounds/".length()));
+			return;
+		}
 		try 
 		{
 			clip = Applet.newAudioClip(new URL(URL));

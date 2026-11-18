@@ -40,7 +40,10 @@ RUN apt-get update \
        > /root/.fluxbox/init
 
 COPY docker/novnc-pointer-lock.js /usr/share/novnc/app/zombie-hunt-pointer-lock.js
-RUN sed -i '/src="app\/ui.js"/a\\    <script type="module" src="app/zombie-hunt-pointer-lock.js"></script>' /usr/share/novnc/vnc.html
+COPY docker/novnc-audio.js /usr/share/novnc/app/zombie-hunt-audio.js
+COPY files/sounds /usr/share/novnc/sounds
+RUN sed -i '/src="app\/ui.js"/a\\    <script type="module" src="app/zombie-hunt-pointer-lock.js"></script>' /usr/share/novnc/vnc.html \
+  && sed -i '/src="app\/zombie-hunt-pointer-lock.js"/a\\    <script type="module" src="app/zombie-hunt-audio.js"></script>' /usr/share/novnc/vnc.html
 
 WORKDIR /app
 COPY --from=build /src/build/classes ./build/classes

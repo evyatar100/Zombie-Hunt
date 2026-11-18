@@ -30,6 +30,8 @@ xdpyinfo -display "${DISPLAY}" >/dev/null
 
 fluxbox >/tmp/fluxbox.log 2>&1 &
 x11vnc -display "${DISPLAY}" -forever -shared -rfbport 5900 -nopw -xkb -bg -o /tmp/x11vnc.log
+export ZH_AUDIO_EVENTS_FILE=/usr/share/novnc/app/zombie-hunt-audio-events.txt
+: > "${ZH_AUDIO_EVENTS_FILE}"
 websockify --web=/usr/share/novnc/ 6080 localhost:5900 >/tmp/novnc.log 2>&1 &
 
 echo "Zombie Hunt noVNC: http://localhost:6080/vnc.html"
