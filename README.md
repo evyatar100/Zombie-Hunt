@@ -10,10 +10,10 @@ The [latest release](https://github.com/evyatar100/Zombie-Hunt/releases/latest) 
 
 | Computer | Download |
 | --- | --- |
-| Mac with Apple Silicon | [macOS arm64 ZIP](https://github.com/evyatar100/Zombie-Hunt/releases/download/v0.1.1/Zombie-Hunt-v0.1.1-macos-arm64.zip) |
-| Mac with Intel | [macOS x64 ZIP](https://github.com/evyatar100/Zombie-Hunt/releases/download/v0.1.1/Zombie-Hunt-v0.1.1-macos-x64.zip) |
-| Windows x64 | [Windows x64 ZIP](https://github.com/evyatar100/Zombie-Hunt/releases/download/v0.1.1/Zombie-Hunt-v0.1.1-windows-x64.zip) |
-| Linux x64 | [Linux x64 tarball](https://github.com/evyatar100/Zombie-Hunt/releases/download/v0.1.1/Zombie-Hunt-v0.1.1-linux-x64.tar.gz) |
+| Mac with Apple Silicon | [macOS arm64 ZIP](https://github.com/evyatar100/Zombie-Hunt/releases/download/v0.1.2/Zombie-Hunt-v0.1.2-macos-arm64.zip) |
+| Mac with Intel | [macOS x64 ZIP](https://github.com/evyatar100/Zombie-Hunt/releases/download/v0.1.2/Zombie-Hunt-v0.1.2-macos-x64.zip) |
+| Windows x64 | [Windows x64 ZIP](https://github.com/evyatar100/Zombie-Hunt/releases/download/v0.1.2/Zombie-Hunt-v0.1.2-windows-x64.zip) |
+| Linux x64 | [Linux x64 tarball](https://github.com/evyatar100/Zombie-Hunt/releases/download/v0.1.2/Zombie-Hunt-v0.1.2-linux-x64.tar.gz) |
 
 Extract the archive before running. On macOS, open `Zombie Hunt.app`; on Windows, run `Zombie Hunt.exe` inside the extracted folder. On Linux, run `Zombie Hunt/bin/Zombie Hunt`. The Mac app is unsigned, so macOS may ask you to approve opening it in System Settings → Privacy & Security. The release includes `SHA256SUMS.txt` to check downloads.
 
@@ -51,7 +51,7 @@ Open the existing cheat prompt with F2 and enter `debug mode` to toggle debug mo
 Install JDK 21 or newer and Python 3.10 or newer, then run on the target operating system:
 
 ```bash
-python3 scripts/package.py --version 0.1.1
+python3 scripts/package.py --version 0.1.2
 python3 scripts/verify_package.py path/to/your/archive
 ```
 

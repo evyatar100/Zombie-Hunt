@@ -9,7 +9,7 @@ on:
       version:
         description: Version for test artifacts (MAJOR.MINOR.PATCH)
         required: true
-        default: 0.1.1
+        default: 0.1.2
 
 permissions:
   contents: read

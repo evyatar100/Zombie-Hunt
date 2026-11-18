@@ -3,11 +3,14 @@ import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
 
 public class Sound extends Thread
 {
@@ -111,11 +114,18 @@ public class Sound extends Thread
 			AudioData data = cached(soundFile);
 			clip = AudioSystem.getClip();
 			clip.open(data.format, data.samples, 0, data.samples.length);
+			CountDownLatch finished = new CountDownLatch(1);
+			clip.addLineListener(event -> {
+				if (event.getType() == LineEvent.Type.STOP)
+					finished.countDown();
+			});
 			clip.start();
-			clip.drain();
+			finished.await(Math.max(500, clip.getMicrosecondLength() / 1000 + 1000), TimeUnit.MILLISECONDS);
 		}
 		catch (Exception e)
 		{
+			if (e instanceof InterruptedException)
+				Thread.currentThread().interrupt();
 			System.err.println("Could not play " + soundFile + ": " + e);
 		}
 		finally

@@ -100,24 +100,24 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 		if(!mp.life.isAlive)
 			return;
 		
-		switch (e.getKeyChar())
+		switch (e.getKeyCode())
 		{
-		case 's':
+		case KeyEvent.VK_S:
 			if(!moveState[1])
 				moveState[0]=true;
 			return;
 
-		case 'w':
+		case KeyEvent.VK_W:
 			if(!moveState[0])
 				moveState[1]=true;
 			return;
 
-		case 'd':
+		case KeyEvent.VK_D:
 			if(!moveState[3])
 				moveState[2]=true;
 			return;
 
-		case 'a':
+		case KeyEvent.VK_A:
 			if(!moveState[2])
 				moveState[3]=true;
 			return;
@@ -129,22 +129,22 @@ public class Listener extends JPanel implements MouseMotionListener, MouseListen
 	public void keyReleased(KeyEvent e) 
 	{
 		if(!gameOn) return;
-		switch (e.getKeyChar())
+		switch (e.getKeyCode())
 		{
 
-		case 's':
+		case KeyEvent.VK_S:
 			moveState[0]=false;
 			break;
 
-		case 'w':
+		case KeyEvent.VK_W:
 			moveState[1]=false;
 			break;
 
-		case 'd':
+		case KeyEvent.VK_D:
 			moveState[2]=false;
 			break;
 
-		case 'a':
+		case KeyEvent.VK_A:
 			moveState[3]=false;
 			break;
 			
